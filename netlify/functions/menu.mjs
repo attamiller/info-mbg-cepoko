@@ -1,29 +1,50 @@
-export const handler = async () => {
-  const gasUrl = process.env.GAS_WEB_APP_URL;
-
+// Netlify Function: mengambil JSON dari Google Apps Script di sisi server.
+// Atur environment variable GAS_WEB_APP_URL ke URL deployment Apps Script yang berakhiran /exec.
+export default async (request, context) => {
+  const gasUrl = Netlify.env.get("GAS_WEB_APP_URL");
   if (!gasUrl) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ ok: false, error: "GAS_WEB_APP_URL belum diatur" })
-    };
+    return new Response(JSON.stringify({
+      ok: false,
+      error: "Environment variable GAS_WEB_APP_URL belum diatur di Netlify."
+    }), {
+      status: 500,
+      headers: { "content-type": "application/json; charset=utf-8" }
+    });
   }
 
   try {
-    const response = await fetch(gasUrl);
-    const data = await response.json();
+    const response = await fetch(gasUrl, {
+      method: "GET",
+      redirect: "follow",
+      headers: { "accept": "application/json" }
+    });
 
-    return {
-      statusCode: response.status,
+    if (!response.ok) {
+      throw new Error(`Google Apps Script merespons HTTP ${response.status}`);
+    }
+
+    const body = await response.text();
+    let data;
+    try {
+      data = JSON.parse(body);
+    } catch {
+      throw new Error("Respons Apps Script bukan JSON. Pastikan URL deployment berakhiran /exec dan aksesnya tersedia.");
+    }
+
+    return new Response(JSON.stringify(data), {
+      status: data.ok ? 200 : 502,
       headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store"
-      },
-      body: JSON.stringify(data)
-    };
+        "content-type": "application/json; charset=utf-8",
+        "cache-control": "public, max-age=60, s-maxage=60"
+      }
+    });
   } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ ok: false, error: "Gagal mengambil data dari Apps Script" })
-    };
+    return new Response(JSON.stringify({
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    }), {
+      status: 502,
+      headers: { "content-type": "application/json; charset=utf-8" }
+    });
   }
 };
