@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#254c39">
+  <title>Info MBG SPPG Cepoko</title>
+  <style>
+    :root{--green:#254c39;--green2:#183729;--gold:#9b8052;--cream:#f6f6f1;--ink:#26352d;--muted:#788078}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,sans-serif}
+    .wrap{max-width:1160px;margin:auto;padding:22px 24px 32px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:8px 0 24px;border-bottom:1px solid #dedfd5}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .logo{width:64px;height:64px;object-fit:contain;border-radius:50%;background:#fff}
+    .brand-name{font: bold 22px Georgia,serif;color:var(--green);letter-spacing:.2px}
+    .brand-sub{font-size:11px;letter-spacing:2px;color:var(--gold);margin-top:5px}
+    .datebox{text-align:right;color:var(--muted);font-size:13px;line-height:1.6;white-space:nowrap}
+    #clock{font-weight:bold;color:var(--green);font-size:16px;font-variant-numeric:tabular-nums}
+    .eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:bold;margin:28px 0 9px}
+    h1,h2{font-family:Georgia,serif;color:var(--green);font-weight:normal}
+    h1{font-size:clamp(32px,5vw,48px);margin:0 0 22px}
+    .hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:30px;align-items:center;background:#fff;border:1px solid #e7e7df;padding:18px;border-radius:4px;box-shadow:0 8px 30px #233a2810}
+    .hero-photo{position:relative;min-height:300px;background:#eceee7;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .hero-photo img{display:block;width:100%;height:360px;object-fit:cover;cursor:zoom-in}
+    .expand{position:absolute;right:12px;bottom:12px;border:0;background:transparent;color:#fff;font-size:27px;line-height:1;padding:8px;cursor:pointer;text-shadow:0 1px 5px #000;filter:drop-shadow(0 1px 2px #000)}
+    .hero-copy{padding:12px 18px 12px 4px}
+    .hero-copy h2{font-size:clamp(28px,4vw,40px);margin:8px 0 14px}
+    .hero-copy p{line-height:1.7;color:#667067;margin:0}
+    .pill{display:inline-block;color:var(--gold);border:1px solid #d9ceb9;padding:6px 10px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase}
+    .empty{padding:32px 22px;background:#fff;border:1px solid #e7e7df;color:var(--green);font:24px Georgia,serif;text-align:center}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:42px 0 18px}
+    .section-head h2{font-size:30px;margin:0}
+    .section-head span{font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .card{background:#fff;border:1px solid #e7e7df;min-width:0}
+    .card-photo{position:relative;background:#eceee7;overflow:hidden}
+    .card-photo img{display:block;width:100%;height:205px;object-fit:cover;cursor:zoom-in}
+    .card-body{padding:14px 15px 17px}
+    .day{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:bold}
+    .card h3{font:22px Georgia,serif;color:var(--green);margin:8px 0}
+    .card p{font-size:13px;line-height:1.55;color:#778078;margin:0}
+    .holiday{display:inline-block;margin-top:10px;background:#f4eee2;color:#8a7048;padding:5px 8px;font-size:10px;letter-spacing:1px}
+    footer{text-align:center;color:#8b918a;font-size:12px;padding:36px 0 8px}
+    .status{margin:18px 0;padding:12px 14px;background:#fff;border-left:3px solid var(--gold);color:#69746b;font-size:13px}
+    .lightbox{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;background:#080d0bd9;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    .lightbox.open{display:flex}
+    .lightbox-panel{width:min(1100px,100%);height:min(88vh,850px);display:flex;flex-direction:column;position:relative}
+    .toolbar{height:48px;display:flex;align-items:center;justify-content:flex-end;gap:20px;color:#fff;flex-shrink:0}
+    .tool{border:0;background:transparent;color:#fff;font-size:25px;line-height:1;min-width:28px;padding:5px;cursor:pointer}
+    .tool:focus-visible,.close:focus-visible{outline:2px solid #fff;outline-offset:3px}
+    #zoomPercent{font-size:13px;min-width:48px;text-align:center;font-variant-numeric:tabular-nums}
+    .close{font-size:34px;margin-left:10px}
+    .lightbox-stage{position:relative;flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;cursor:grab}
+    .lightbox-stage.dragging{cursor:grabbing}
+    .lightbox-image{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;transform-origin:center center;pointer-events:none;will-change:transform;user-select:none;-webkit-user-drag:none}
+    .hint{color:#fff9;text-align:center;font-size:12px;line-height:1.5;padding-top:12px;flex-shrink:0}
+    .loading{padding:32px;text-align:center;color:var(--muted)}
+    @media(max-width:700px){
+      .wrap{padding:16px 14px 24px}header{align-items:flex-start}.logo{width:52px;height:52px}.brand-name{font-size:17px}.brand-sub{font-size:9px;letter-spacing:1.3px}.datebox{font-size:11px}#clock{font-size:14px}
+      .hero{grid-template-columns:1fr;gap:12px;padding:12px}.hero-photo img{height:260px}.hero-copy{padding:8px 6px 12px}.hero-copy h2{font-size:30px}
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card-photo img{height:145px}.card-body{padding:11px}.card h3{font-size:18px}.card p{font-size:12px}
+      .section-head{margin-top:32px}.section-head h2{font-size:25px}.section-head span{font-size:10px}
+      .lightbox{padding:10px}.lightbox-panel{height:90vh}.toolbar{height:42px;gap:12px}.tool{font-size:23px}.hint{font-size:11px}
+    }
+    @media(max-width:390px){.datebox{font-size:10px}.brand{gap:9px}.brand-name{font-size:15px}.grid{gap:8px}.card-photo img{height:125px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img class="logo" src="https://files.catbox.moe/ijvi3a.png" alt="Logo SPPG Cepoko">
+        <div><div class="brand-name">Info MBG SPPG Cepoko</div><div class="brand-sub">INFORMASI MENU HARIAN</div></div>
+      </div>
+      <div class="datebox"><div id="date">Memuat tanggal...</div><div id="clock">--:--:-- WIB</div></div>
+    </header>
+
+    <div class="eyebrow">Informasi penyajian</div>
+    <h1>Menu Hari Ini</h1>
+    <main id="today"><div class="loading">Memuat menu hari ini...</div></main>
+
+    <div class="section-head"><h2>Menu Mingguan</h2><span>Senin — Jumat</span></div>
+    <section id="weekly" class="grid"><div class="loading">Memuat menu mingguan...</div></section>
+    <div id="status" class="status" hidden></div>
+    <footer>© 2026 Info MBG SPPG Cepoko</footer>
+  </div>
+
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lightbox-panel">
+      <div class="toolbar">
+        <button class="tool" id="downloadBtn" aria-label="Unduh foto" title="Unduh foto">↓</button>
+        <button class="tool" id="zoomOut" aria-label="Perkecil" title="Perkecil">−</button>
+        <span id="zoomPercent">100%</span>
+        <button class="tool" id="zoomIn" aria-label="Perbesar" title="Perbesar">+</button>
+        <button class="tool close" id="closeBtn" aria-label="Tutup" title="Tutup">×</button>
+      </div>
+      <div class="lightbox-stage" id="stage">
+        <img id="lightboxImage" class="lightbox-image" alt="Foto menu diperbesar" draggable="false">
+      </div>
+      <div class="hint">Gunakan dua jari untuk memperbesar atau memperkecil, ketuk dua kali untuk zoom, serta seret untuk menggeser foto.</div>
+    </div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const dateFmt = new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  function updateClock(){const now=new Date();$('date').textContent=dateFmt.format(now);$('clock').textContent=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(now)+' WIB'}
+  updateClock();setInterval(updateClock,1000);
+
+  function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function photoMarkup(item,cls){if(!item.image)return `<div class="${cls}" style="display:flex;align-items:center;justify-content:center;color:#8a938a;min-height:160px">Foto belum tersedia</div>`;return `<div class="${cls}"><img src="${item.image}" alt="Foto menu ${esc(item.day)}" data-day="${esc(item.day)}" loading="lazy"><button class="expand" type="button" aria-label="Perbesar foto" title="Perbesar foto">⤢</button></div>`}
+  function render(data){
+    const items=data.items||[];
+    const today=data.today;
+    if(today && !today.holiday){
+      $('today').innerHTML=`<article class="hero">${photoMarkup(today,'hero-photo')}<div class="hero-copy"><span class="pill">${esc(today.day)}</span><h2>${esc(today.menu||'(-)')}</h2><p>${esc(today.note||'')}</p></div></article>`;
+    }else{
+      const message=data.weekend?'Sampai Jumpa Senin depan!':(today&&today.holiday?'Hari ini libur. Sampai jumpa pada jadwal berikutnya!':'Hari ini tidak ada penyajian menu.');
+      $('today').innerHTML=`<div class="empty">${message}</div>`;
+    }
+    $('weekly').innerHTML=items.map(item=>`<article class="card">${photoMarkup(item,'card-photo')}<div class="card-body"><div class="day">${esc(item.day)}</div><h3>${esc(item.menu||'(-)')}</h3><p>${esc(item.note||'')}</p>${item.holiday?'<span class="holiday">LIBUR</span>':''}</div></article>`).join('');
+    $('status').hidden=false;$('status').textContent='Informasi menu diperbarui dari Google Spreadsheet.';
+    document.querySelectorAll('.hero-photo img,.card-photo img').forEach(img=>{
+      img.addEventListener('click',()=>openLightbox(img.src,img.dataset.day));
+    });
+    document.querySelectorAll('.expand').forEach(btn=>btn.addEventListener('click',e=>{
+      e.stopPropagation();const img=btn.parentElement.querySelector('img');if(img)openLightbox(img.src,img.dataset.day);
+    }));
+  }
+  async function loadMenu(){
+    try{const res=await fetch('/.netlify/functions/menu',{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(!data.ok)throw new Error(data.error||'Gagal membaca data');render(data)}
+    catch(err){$('today').innerHTML='<div class="empty">Menu belum dapat dimuat.</div>';$('weekly').innerHTML='';$('status').hidden=false;$('status').textContent='Periksa koneksi atau pengaturan penghubung Google Spreadsheet di Netlify. Detail: '+err.message}
+  }
+  loadMenu();
+
+  // Lightbox: gambar tetap memakai file sumber asli; zoom hanya diterapkan di popup.
+  const lightbox=$('lightbox'),stage=$('stage'),lbImg=$('lightboxImage');
+  let scale=1,tx=0,ty=0,pointers=new Map(),pinch=null,lastTap=0,gestureMoved=false,downloadName='Menu.jpg';
+  function bounds(){const r=stage.getBoundingClientRect(),w=lbImg.getBoundingClientRect().width,h=lbImg.getBoundingClientRect().height;return {x:Math.max(0,(w*scale-r.width)/2),y:Math.max(0,(h*scale-r.height)/2)}}
+  function paint(){const b=bounds();tx=Math.max(-b.x,Math.min(b.x,tx));ty=Math.max(-b.y,Math.min(b.y,ty));lbImg.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;$('zoomPercent').textContent=Math.round(scale*100)+'%'}
+  function reset(){scale=1;tx=0;ty=0;paint();pointers.clear();pinch=null}
+  function openLightbox(src,day){lbImg.src=src;downloadName='Menu-'+(day||'Foto').replace(/[^a-z0-9-]/gi,'')+'.'+(src.startsWith('data:image/png')?'png':src.startsWith('data:image/webp')?'webp':src.startsWith('data:image/gif')?'gif':'jpg');$('downloadBtn').onclick=()=>{const a=document.createElement('a');a.href=src;a.download=downloadName;document.body.appendChild(a);a.click();a.remove()};lightbox.classList.add('open');lightbox.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';reset()}
+  function closeLightbox(){lightbox.classList.remove('open');lightbox.setAttribute('aria-hidden','true');document.body.style.overflow='';lbImg.removeAttribute('src');reset()}
+  $('closeBtn').onclick=closeLightbox;lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&lightbox.classList.contains('open'))closeLightbox()});
+  function setScale(next,cx=stage.clientWidth/2,cy=stage.clientHeight/2){const old=scale;next=Math.max(1,Math.min(5,next));if(next===old)return;const rect=stage.getBoundingClientRect(),px=cx-rect.left,py=cy-rect.top;tx=px-(px-tx)*(next/old);ty=py-(py-ty)*(next/old);scale=next;if(scale===1){tx=0;ty=0}paint()}
+  $('zoomIn').onclick=()=>setScale(scale+.25);$('zoomOut').onclick=()=>setScale(scale-.25);
+  function pointDistance(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+  function pointMid(a,b){return{x:(a.x+b.x)/2,y:(a.y+b.y)/2}}
+  stage.addEventListener('pointerdown',e=>{
+    if(!lightbox.classList.contains('open'))return;
+    stage.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    gestureMoved=false;stage.classList.add('dragging');
+    if(pointers.size===2){const p=[...pointers.values()];pinch={distance:pointDistance(p[0],p[1]),scale,mid:pointMid(p[0],p[1]),tx,ty}}
+  });
+  stage.addEventListener('pointermove',e=>{
+    if(!pointers.has(e.pointerId))return;
+    const prev=pointers.get(e.pointerId),cur={x:e.clientX,y:e.clientY};pointers.set(e.pointerId,cur);
+    if(pointers.size===2){
+      const p=[...pointers.values()],dist=pointDistance(p[0],p[1]),mid=pointMid(p[0],p[1]);
+      if(pinch){const next=Math.max(1,Math.min(5,pinch.scale*(dist/Math.max(1,pinch.distance))));const rect=stage.getBoundingClientRect();const anchorX=pinch.mid.x-rect.left,anchorY=pinch.mid.y-rect.top;const ratio=next/pinch.scale;scale=next;tx=anchorX-(anchorX-pinch.tx)*ratio+(mid.x-pinch.mid.x);ty=anchorY-(anchorY-pinch.ty)*ratio+(mid.y-pinch.mid.y);if(scale===1){tx=0;ty=0}paint()}
+      gestureMoved=true;
+    }else if(pointers.size===1){
+      const dx=cur.x-prev.x,dy=cur.y-prev.y;
+      if(scale>1){tx+=dx;ty+=dy;paint();gestureMoved=true}
+    }
+  });
+  function pointerEnd(e){
+    if(!pointers.has(e.pointerId))return;
+    pointers.delete(e.pointerId);
+    if(pointers.size<2)pinch=null;
+    stage.classList.remove('dragging');
+    if(pointers.size===1){pinch=null}
+    if(!gestureMoved){const now=Date.now();if(now-lastTap<300){if(scale===1)setScale(2.2);else reset();lastTap=0}else lastTap=now}
+  }
+  stage.addEventListener('pointerup',pointerEnd);stage.addEventListener('pointercancel',pointerEnd);stage.addEventListener('lostpointercapture',pointerEnd);
+  window.addEventListener('resize',()=>{if(lightbox.classList.contains('open'))paint()});
+</script>
+</body>
+</html>
